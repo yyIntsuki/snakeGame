@@ -25,6 +25,7 @@ var Game = {
         direction = 'right';            // The direction of our snake.
         new_direction = null;           // A buffer to store the new direction into.
         addNew = false;                 // A variable used when an apple has been eaten.
+        isOutofBound = false;           // Toggler for if snake is out of bound.
 
         // Set up a Phaser controller for keyboard input.
         cursors = game.input.keyboard.createCursorKeys();
@@ -41,15 +42,15 @@ var Game = {
         this.generateApple();
 
         // Add Text to top of game.
-        textStyle_Key = { font: "bold 14px sans-serif", fill: "#46c0f9", align: "center" };
+        textStyle_Key = { font: "bold 14px sans-serif", fill: "#bbff00", align: "center" };
         textStyle_Value = { font: "bold 18px sans-serif", fill: "#fff", align: "center" };
 
         // Score.
-        game.add.text(30, 20, "SCORE", textStyle_Key);
-        scoreTextValue = game.add.text(90, 18, score.toString(), textStyle_Value);
+        game.add.text(30, 20, "Score", textStyle_Key);
+        scoreTextValue = game.add.text(35, 40, score.toString(), textStyle_Value);
         // Speed.
-        game.add.text(500, 20, "SPEED", textStyle_Key);
-        speedTextValue = game.add.text(558, 18, speed.toString(), textStyle_Value);
+        game.add.text(30, 440, "Level", textStyle_Key);
+        speedTextValue = game.add.text(90, 438, speed.toString(), textStyle_Value);
 
     },
 
@@ -112,18 +113,22 @@ var Game = {
 
                 lastCell.x = firstCell.x + 15;
                 lastCell.y = firstCell.y;
+                if(this.isOutofBound) lastCell.x = game.world.bounds.x;
             }
             else if(direction == 'left'){
                 lastCell.x = firstCell.x - 15;
                 lastCell.y = firstCell.y;
+                if(this.isOutofBound) lastCell.x = game.world.bounds.width - 15;
             }
             else if(direction == 'up'){
                 lastCell.x = firstCell.x;
                 lastCell.y = firstCell.y - 15;
+                if(this.isOutofBound) lastCell.y = game.world.bounds.height - 15;
             }
             else if(direction == 'down'){
                 lastCell.x = firstCell.x;
                 lastCell.y = firstCell.y + 15;
+                if(this.isOutofBound) lastCell.y = game.world.bounds.y;
             }
 
 
@@ -163,8 +168,8 @@ var Game = {
         // X is between 0 and 585 (39*15)
         // Y is between 0 and 435 (29*15)
 
-        var randomX = Math.floor(Math.random() * 40 ) * squareSize,
-            randomY = Math.floor(Math.random() * 30 ) * squareSize;
+        var randomX = Math.floor(Math.random() * 32 ) * squareSize,
+            randomY = Math.floor(Math.random() * 32 ) * squareSize;
 
         // Add a new apple.
         apple = game.add.sprite(randomX, randomY, 'apple');
@@ -214,11 +219,15 @@ var Game = {
 
         // Check if the head of the snake is in the boundaries of the game field.
 
-        if(head.x >= 600 || head.x < 0 || head.y >= 450 || head.y < 0){
+        if(head.x >= 480 || head.x < 0 || head.y >= 480 || head.y < 0){
 
 
             // If it's not in, we've hit a wall. Go to game over screen.
-            game.state.start('Game_Over');
+            // game.state.start('Game_Over');
+            this.isOutofBound = true;
+        }
+        else{
+            this.isOutofBound = false;
         }
 
     }
